@@ -18,9 +18,8 @@
 <div>
     <h4>Client</h4>
     <hr />
-    <div class="row">
-        <div class="col-3">
-            <dl class="dl-horizontal">
+       
+    <dl class="dl-horizontal">
                 <dt>
                     @Html.DisplayNameFor(model => model.Name)
                 </dt>
@@ -53,10 +52,6 @@
                     @Html.DisplayFor(model => model.PhoneNumber)
                 </dd>
 
-            </dl>
-        </div>
-        <div class="col-6">
-            <dl class="dl-horizontal">
                 <dt>
                     @Html.DisplayNameFor(model => model.Email)
                 </dt>
@@ -87,8 +82,6 @@
                 </dd>
 
             </dl>
-        </div>
-    </div>
     <div id="div_alert">
        
 
@@ -125,7 +118,6 @@
 
 </div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.ClientId }, new { @class = "btn btn-warning" })
     @Html.ActionLink("Back to List", "Index","", new { @class = "btn btn-default" })
 </p>
 
@@ -197,7 +189,7 @@
 
         if (parseFloat("@Model.Profit")>0) {
             var de=' <div class="alert alert-success text-center">'+
-            '<strong>This client can receive a discount of '+ @Model.Discount+'</strong>'+
+                '<strong>This client can receive a discount of ' + @Model.Discount+'</strong>'+
                 '</div>'
             $("#div_alert").html(de);
         } else if (parseFloat("@Model.Profit")==0) {
@@ -219,16 +211,16 @@
             '<thead>' +
             '<tr>' +
             '<th>' +
-            '<p>Product Name</p>' +
+            '<p>Product name</p>' +
             '</th>' +
             '<th>' +
-            '<p>UnitPrice</p>' +
+            '<p>Unit price</p>' +
             '</th>' +
             '<th>' +
             '<p>Amount</p>' +
             '</th>' +
             '<th>' +
-            '<p>SellPrice</p>' +
+            '<p>Sell price</p>' +
             '</th>' +
             '<th>' +
             '<p>Total</p>' +

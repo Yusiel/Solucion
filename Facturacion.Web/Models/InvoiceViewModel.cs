@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
@@ -47,9 +48,10 @@ namespace Facturacion.Web.Models
 
         public string Address { get; set; }
 
-   
+        [Display(Name = "Born date")]
         public DateTime BornDate { get; set; }
 
+        [Display(Name = "Phone number")]
         public string PhoneNumber { get; set; }
 
         public string Email { get; set; }
@@ -57,6 +59,8 @@ namespace Facturacion.Web.Models
         public virtual List<Invoice> Invoice { get; set; }
 
         public decimal Profit { get; set; }
+
+        [Display(Name = "Is Profit?")]
         public bool IsProfit 
         { get
             {
@@ -71,6 +75,8 @@ namespace Facturacion.Web.Models
             }
         
         }
+
+        [Display(Name ="Discount 10%")]
         public decimal Discount
         {
             get

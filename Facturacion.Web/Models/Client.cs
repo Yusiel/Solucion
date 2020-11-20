@@ -39,21 +39,5 @@ namespace Facturacion.Web.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Invoice> Invoice { get; set; }
 
-        [NotMapped]
-        public bool Profit 
-        {
-            get
-            {
-                bool response;
-                if (true)
-                {
-
-                }
-                return response;
-            }
-        }
-
-
-        public static double Pr
     }
 }
