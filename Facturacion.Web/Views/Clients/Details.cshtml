@@ -1,0 +1,250 @@
+﻿@model Facturacion.Web.Models.ClientsViewModels
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+<style>
+    td.details-control {
+        background: url('../resources/details_open.png') no-repeat center center;
+        cursor: pointer;
+    }
+
+    tr.shown td.details-control {
+        background: url('../resources/details_close.png') no-repeat center center;
+    }
+</style>
+<div>
+    <h4>Client</h4>
+    <hr />
+    <div class="row">
+        <div class="col-3">
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => model.Name)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Name)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.Address)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Address)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.BornDate)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.BornDate)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.PhoneNumber)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.PhoneNumber)
+                </dd>
+
+            </dl>
+        </div>
+        <div class="col-6">
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => model.Email)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Email)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.IsProfit)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.IsProfit)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Profit)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Profit)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Discount)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Discount)
+                </dd>
+
+            </dl>
+        </div>
+    </div>
+    <div id="div_alert">
+       
+
+    </div>
+    <hr />
+    <div class="card">
+        <div class="card-header">
+            <h4>Invoices</h4>
+        </div>
+        <div class="card-body">
+            <table id="table_invoices" class="table-sm table-bordered" width="100%">
+                <thead>
+                    <tr>
+                        <th>
+                        </th>
+                        <th>
+                            <p>InvoiceId</p>
+                        </th>
+                        <th>
+                            <p>Issue Date</p>
+                        </th>
+                        <th>
+                            <p>Is paid?</p>
+                        </th>
+                        <th>
+                            <p>Total</p>
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+
+    </div>
+
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.ClientId }, new { @class = "btn btn-warning" })
+    @Html.ActionLink("Back to List", "Index","", new { @class = "btn btn-default" })
+</p>
+
+<script>
+    $(document).ready(function () {
+        var table = $('#table_invoices').DataTable({
+            ajax: {
+                type: "POST",
+                url: "@Url.Action("GetInvoicesByClient")",
+                dataType: 'json',
+                data: { textJson: "@Model.ClientId" },
+                error: function (ex) {
+                    toastr["error"]("Failed to retrieve invoices");
+                }
+                },
+            "columns": [
+                {
+                    "className": 'details-control',
+                    "orderable": false,
+                    "data": null,
+                    "defaultContent": ''
+                },
+                { "data": "InvoiceId", "autoWidth": true },
+                {
+                    "data": "IssueDate", "autoWidth": true, type: 'date',
+                    render: function (data, type, row) {
+                        return data ? moment(data).format('L') : '';
+                    }
+                },
+                {
+                    "data": "Paid", "autoWidth": true,
+                    render: function (data, type, row) {
+                        if (data == true) {
+                            return '<input type=\"checkbox\" disabled checked value="' + data + '">';
+                        } else {
+                            return '<input type=\"checkbox\" disabled value="' + data + '">';
+                        }
+                    }
+                },
+                {
+                     "autoWidth": true, type: 'date',
+                    render: function (data, type, row) {
+                        var total = 0;
+                        $.each(row.InvoiceDetail, function (i, r) {
+                            total += r.Total;
+                        });
+
+                        return total;
+                    }
+                },
+            ],
+            ordering:true
+        });
+        $('#table_invoices tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = table.row(tr);
+
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // Open this row
+                row.child(format(row.data())).show();
+                tr.addClass('shown');
+            }
+        });
+
+        if (parseFloat("@Model.Profit")>0) {
+            var de=' <div class="alert alert-success text-center">'+
+            '<strong>This client can receive a discount of '+ @Model.Discount+'</strong>'+
+                '</div>'
+            $("#div_alert").html(de);
+        } else if (parseFloat("@Model.Profit")==0) {
+            var de =' <div class="alert alert-info text-center">'+
+            '<strong>Attention! This customer is not generating profit</strong>'+
+                '</div>'
+            $("#div_alert").html(de);
+        } else {
+            var de =' <div class="alert alert-danger text-center">'+
+            '<strong>Attention! This customer is generating losses</strong>'+
+                '</div>'
+            $("#div_alert").html(de);
+        }
+    });
+
+    function format(d) {
+        // `d` is the original data object for the row
+        var base = '<table class="table table-bordered">' +
+            '<thead>' +
+            '<tr>' +
+            '<th>' +
+            '<p>Product Name</p>' +
+            '</th>' +
+            '<th>' +
+            '<p>UnitPrice</p>' +
+            '</th>' +
+            '<th>' +
+            '<p>Amount</p>' +
+            '</th>' +
+            '<th>' +
+            '<p>SellPrice</p>' +
+            '</th>' +
+            '<th>' +
+            '<p>Total</p>' +
+            '</th>' +
+            '</tr>' +
+            '</thead>';
+        var tbody="<tbody>"
+        $.each(d.InvoiceDetail, function (i, inv) {
+            tbody += "<tr>";
+            tbody += "<td>" + inv.Product.Name +"</td>";
+            tbody += "<td>" + inv.Product.UnitPrice + "</td><td>" + inv.Amount + "</td><td>" + inv.SellPrice + "</td><td>" + inv.Total +"</td>";
+            tbody+="</tr>";
+        });
+
+        var final = '</tbody></table>';
+
+        return base + tbody + final;
+    }
+</script>
